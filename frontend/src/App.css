@@ -1,0 +1,91 @@
+.App {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.side_panel {
+  height: 100vh;
+  width: 10vw;
+  background-color: rgb(135, 135, 233);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.side_panel h4 {
+  cursor: pointer;
+}
+
+.main_panel {
+  background-color: rgb(255, 255, 255);
+  height: 100vh;
+  width: 90vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.panel_header button {
+  background-color: rgb(161, 161, 228);
+  height: 60%;
+}
+.panel_header {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.models {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel_row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  height: fit-content;
+  width: 100%;
+}
+
+.synthetic_data_row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.synthetic_data_row * {
+  margin: 10px;
+}
+
+.model_info {
+  border: 1px dotted black;
+  display: flex;
+  flex-direction: column;
+}
+
+.syn_data_files {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.syn_data_rows {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
