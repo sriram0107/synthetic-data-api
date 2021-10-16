@@ -69,10 +69,7 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
         fd.append("data_file", csv);
         const msg = await fetch(process.env.REACT_APP_BACKEND_MODEL + `createData/${newName}/${id}`, {
             method: "PUT",
-            headers: {
-             'Content-Type': 'application/json'
-            },
-                body: fd
+            body: fd
         }) 
         changeRefresh(!refresh);
     }

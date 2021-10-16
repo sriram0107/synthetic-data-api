@@ -5,12 +5,16 @@ import ModelComponent from './components/modelComponent';
 import DatasetComponent from './components/datasetComponent';
 
 function App() {
+  // to change between real data & model panel
   const [modelPanelOpen, changeModelPanelOpen] = useState(true);
+
   const [models, changeModels] = useState([]);
   const [datasets, changeDatasets] = useState([]);
   const [user, changeUser] = useState({});
   const [userid, changeUserId] = useState("");
   const [projectid, changeProjectId] = useState("");
+
+  // refresh variable dictates when the content needs to be fetched again
   const [refresh, changeRefresh] = useState(false);
 
 
@@ -37,7 +41,7 @@ function App() {
       .catch(err => console.error("Cannot find models", err))
   }, [projectid, refresh])
 
-  // retreive datasets
+  // retrieve datasets
   useEffect(() => {
     fetch(process.env.REACT_APP_BACKEND_DATASET + projectid as string)
       .then(data => data.json())

@@ -44,7 +44,6 @@ exports.modelRouter.post("/custom/:id", (req, res) => __awaiter(void 0, void 0, 
             syntheticData: []
         });
         yield newModel.save();
-        // have to update project coll here ------------------------------------------>
         yield project_schema_1.ProjectColl.updateOne({ project_id: projectID }, { $push: { models: modelID } });
         res.status(200).send("Model Created");
     }
@@ -75,7 +74,7 @@ exports.modelRouter.delete("/:id/:projectid", (req, res) => __awaiter(void 0, vo
 exports.modelRouter.delete("/deleteData/:id/:name", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("deletedata route");
     try {
-        yield model_schema_1.ModelColl.updateMany({ _id: new mongoose_1.Types.ObjectId(req.params.id) }, { $pull: { syntheticData: { name: req.params.name } } }, { multi: true });
+        yield model_schema_1.ModelColl.updateOne({ _id: new mongoose_1.Types.ObjectId(req.params.id) }, { $pull: { syntheticData: { name: req.params.name } } }, { multi: true });
         res.status(200).send("Model deleted");
     }
     catch (err) {

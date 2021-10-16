@@ -11,7 +11,10 @@ exports.realDataColl = new mongoose_1.Schema({
         type: mongoose_1.Types.ObjectId,
         required: true,
     },
-    name: String,
+    name: {
+        type: String,
+        required: true,
+    },
     data: [Object]
 }, {
     writeConcern: {

@@ -10,7 +10,10 @@ export const realDataColl = new Schema({
         type: Types.ObjectId,
         required: true,
     },
-    name: String,
+    name: {
+        type: String,
+        required: true,
+    },
     data: [Object]
 },
     {

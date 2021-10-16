@@ -1,10 +1,5 @@
 import { model, Types, Schema } from "mongoose";
 
-interface SyntheticData {
-    name: string;
-    data: any;
-}
-
 export const Model = new Schema({
     _id: {
         type: Types.ObjectId,

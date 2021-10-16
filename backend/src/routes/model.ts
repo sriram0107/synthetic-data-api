@@ -33,7 +33,6 @@ modelRouter.post("/custom/:id", async (req: Request, res: Response) => {
         })
 
         await newModel.save();
-        // have to update project coll here ------------------------------------------>
         await ProjectColl.updateOne({project_id: projectID}, {$push: {models: modelID}});
         res.status(200).send("Model Created");
     } catch (err) {
@@ -64,7 +63,7 @@ modelRouter.delete("/:id/:projectid", async (req: Request, res: Response) => {
 modelRouter.delete("/deleteData/:id/:name", async (req: Request, res: Response) => {
     console.log("deletedata route")
     try {
-        await ModelColl.updateMany({ _id: new Types.ObjectId(req.params.id) }, { $pull: { syntheticData: { name: req.params.name }}}, {multi: true});
+        await ModelColl.updateOne({ _id: new Types.ObjectId(req.params.id) }, { $pull: { syntheticData: { name: req.params.name }}}, {multi: true});
         res.status(200).send("Model deleted");
     } catch (err) {
         console.error(err);
