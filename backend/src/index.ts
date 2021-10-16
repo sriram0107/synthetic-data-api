@@ -3,6 +3,7 @@ import { datasetRouter } from "./routes/dataset";
 import { modelRouter } from "./routes/model";
 import { userRouter } from './routes/user';
 import { projectRouter } from './routes/project';
+import { synDataRouter } from './routes/syndata';
 import mongoose from "mongoose";
 import path from "path";
 import helmet from "helmet";
@@ -49,7 +50,8 @@ app.get("/", (req, res) => {
 app.use("/dataset",  datasetRouter);
 app.use("/model", modelRouter);
 app.use("/user", userRouter);
-app.use("/project",  projectRouter);
+app.use("/project", projectRouter);
+app.use("/syndata",  synDataRouter);
 
 // Start Express server
 const PORT = process.env.PORT || 4000;

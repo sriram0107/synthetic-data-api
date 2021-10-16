@@ -2,6 +2,7 @@ import express from 'express';
 import { Request, Response, NextFunction } from "express";
 import { ModelColl } from "../schema/model.schema";
 import { ProjectColl } from "../schema/project.schema";
+import { SynDataColl } from "../schema/syndata.schema";
 import { Types } from "mongoose";
 import Papa from "papaparse";
 
@@ -52,7 +53,9 @@ modelRouter.put("/changeName/:id/:name", async (req: Request, res: Response) => 
 
 modelRouter.delete("/:id/:projectid", async (req: Request, res: Response) => {
     try {
-        await ModelColl.deleteOne({ _id: new Types.ObjectId(req.params.id) });
+        const modelID = new Types.ObjectId(req.params.id);
+        await SynDataColl.deleteMany({ model_id: modelID });
+        await ModelColl.deleteOne({ _id: modelID });
         await ProjectColl.updateOne({project_id: req.params.projectid}, {$pull: {models: req.params.id}});
         res.status(200).send("Model deleted");
     } catch (err) {
@@ -60,10 +63,11 @@ modelRouter.delete("/:id/:projectid", async (req: Request, res: Response) => {
     }
 })
 
-modelRouter.delete("/deleteData/:id/:name", async (req: Request, res: Response) => {
-    console.log("deletedata route")
+modelRouter.delete("/deleteData/:id/:dataid", async (req: Request, res: Response) => {
     try {
-        await ModelColl.updateOne({ _id: new Types.ObjectId(req.params.id) }, { $pull: { syntheticData: { name: req.params.name }}}, {multi: true});
+        const dataID = new Types.ObjectId(req.params.dataid);
+        await SynDataColl.deleteOne({ _id: dataID });
+        await ModelColl.updateOne({ _id: new Types.ObjectId(req.params.id) }, { $pull: { syntheticData: dataID}}, {multi: true});
         res.status(200).send("Model deleted");
     } catch (err) {
         console.error(err);
@@ -71,15 +75,21 @@ modelRouter.delete("/deleteData/:id/:name", async (req: Request, res: Response) 
     }
 })
 
-modelRouter.put("/createData/:name/:id", async (req: Request, res: Response) => {
+modelRouter.put("/createData/:name/:id/:projectid", async (req: Request, res: Response) => {
     try {
         const results = Papa.parse(req.body["data_file"], { header: true });
         const rows = results.data;
-        const newData = {
+        const newDataID = new Types.ObjectId();
+        const modelID = new Types.ObjectId(req.params.id);
+        const newData = new SynDataColl({
+            _id: newDataID,
             name: req.params.name,
+            model_id: modelID,
+            project_id: new Types.ObjectId(req.params.projectid),
             data: rows
-        }
-        await ModelColl.updateOne({ _id: new Types.ObjectId(req.params.id) }, { $push: { syntheticData: newData }});
+        })
+        await ModelColl.updateOne({ _id: modelID }, { $push: { syntheticData: newDataID } });
+        await newData.save();
         res.status(200).send("Model updated");
     } catch (err) {
         console.log(err)

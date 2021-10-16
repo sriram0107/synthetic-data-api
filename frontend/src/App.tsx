@@ -31,7 +31,6 @@ function App() {
   }, [])
 
   // get models
-  console.log("check, ", process.env.REACT_APP_BACKEND_MODEL + projectid);
   useEffect(() => {
       fetch(process.env.REACT_APP_BACKEND_MODEL + projectid as string)
       .then(data => data.json())
@@ -43,6 +42,7 @@ function App() {
 
   // retrieve datasets
   useEffect(() => {
+    console.log("Retrieving datasets related to project - ", projectid);
     fetch(process.env.REACT_APP_BACKEND_DATASET + projectid as string)
       .then(data => data.json())
       .then(datasets => changeDatasets(datasets))
@@ -59,7 +59,7 @@ function App() {
       </div>
       <div className="main_panel">
         {modelPanelOpen ? <ModelComponent models={models} projectid={projectid} refresh={refresh} changeRefresh={changeRefresh} /> :
-          <DatasetComponent datasets={datasets} refresh={refresh} changeRefresh={changeRefresh} userid={userid}/>}
+          <DatasetComponent datasets={datasets} refresh={refresh} changeRefresh={changeRefresh} projectid={projectid}/>}
       </div>
     </div>
   );

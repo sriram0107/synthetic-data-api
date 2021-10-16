@@ -37,14 +37,14 @@ datasetRouter.put("/updateName/:name/:id", async (req: Request, res: Response) =
     }
 })
 
-datasetRouter.post("/createData/:name/:userid", async (req: Request, res: Response) => {
+datasetRouter.post("/createData/:name/:projectid", async (req: Request, res: Response) => {
     try {
         const results = Papa.parse(req.body["data_file"], { header: true });
         const rows = results.data;
         const newID = new Types.ObjectId();
         const newData = new realData({
             _id: newID,
-            user_id: req.params.userid,
+            project_id: req.params.projectid,
             name: req.params.name,
             data: rows,
         })

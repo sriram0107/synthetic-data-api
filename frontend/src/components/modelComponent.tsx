@@ -1,5 +1,5 @@
-import React from 'react';
-import { Model } from './dataTypes';
+import React, { useState, useEffect } from 'react';
+import { Model, SynData } from './dataTypes';
 import { Types } from "mongoose";
 import Papa from "papaparse";
 import "../App.css";
@@ -13,6 +13,18 @@ interface ModelComponentProps {
 }
 
 const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refresh, changeRefresh }) => {
+
+    const [synData, changeSynData] = useState([]);
+
+    useEffect(() => {
+        fetch(process.env.REACT_APP_BACKEND_SYN + projectid)
+            .then(data => data.json())
+            .then(data => {
+                console.log("syndata new , , ", data)
+                changeSynData(data);
+            })
+            .catch((err) => console.error(err))
+    }, [projectid, refresh])
 
     const createNewModel = () => {
         const modelName = prompt("Enter name of model");
@@ -40,9 +52,11 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
         fetch(`${process.env.REACT_APP_BACKEND_MODEL}${id}/${projectid}`, {
             method: "DELETE",
         })
-            .then(resp => console.log(resp))
+            .then(resp => {
+                console.log(resp);
+                changeRefresh(!refresh);
+            })
             .catch(err => console.error(err, " error while deleting model"))
-        changeRefresh(!refresh);
     }
 
     const updateName = (id: String) => {
@@ -67,7 +81,7 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
         const csv = decoder.decode(result.value);
         const fd = new FormData();
         fd.append("data_file", csv);
-        const msg = await fetch(process.env.REACT_APP_BACKEND_MODEL + `createData/${newName}/${id}`, {
+        const msg = await fetch(process.env.REACT_APP_BACKEND_MODEL + `createData/${newName}/${id}/${projectid}`, {
             method: "PUT",
             body: fd
         }) 
@@ -86,11 +100,13 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
         changeRefresh(!refresh);
     }
 
-    const printSynData = (id:String, file: any) => {
+    const printSynData = (data_id: String, model_id: String) => {
+        const modelSynData: SynData = synData.filter((data: SynData) => data._id === data_id)[0];
+        console.log("filering", synData);
         return (
             <div className="syn_data_rows">
-                <p>{file.name}</p>
-                <button onClick={() => deleteSyntheticData(id, file.name)}> Delete synthetic data</button>
+                <p>{modelSynData?.name}</p>
+                <button onClick={() => deleteSyntheticData(model_id, modelSynData._id)}> Delete synthetic data</button>
              </div>)
     }
 
@@ -111,7 +127,7 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
                         <button onClick={() => createSyntheticData(model._id)}>Create synthetic data</button>
                     </div>
                     <div className="syn_data_files">
-                    {model.syntheticData.map(file => printSynData(model._id, file))}
+                    {model.syntheticData.map(data_id => printSynData(data_id, model._id))}
                     </div>
                 </div>    
             </div>)

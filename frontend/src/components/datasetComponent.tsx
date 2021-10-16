@@ -7,10 +7,10 @@ interface DatasetComponentProps {
     datasets: Dataset[];
     refresh: boolean;
     changeRefresh: React.Dispatch<React.SetStateAction<boolean>>;
-    userid: String
+    projectid: String
 }
 
-const DatasetComponent: React.FC<DatasetComponentProps> = ({ datasets, refresh, changeRefresh, userid }) => {
+const DatasetComponent: React.FC<DatasetComponentProps> = ({ datasets, refresh, changeRefresh, projectid }) => {
 
     const createDataset = async () => {
         try {
@@ -22,7 +22,7 @@ const DatasetComponent: React.FC<DatasetComponentProps> = ({ datasets, refresh, 
             const csv = decoder.decode(result.value);
             const fd = new FormData();
             fd.append("data_file", csv);
-            const msg = await fetch(process.env.REACT_APP_BACKEND_DATASET + `createData/${newName}/${userid}`, {
+            const msg = await fetch(process.env.REACT_APP_BACKEND_DATASET + `createData/${newName}/${projectid}`, {
                 method: "POST",
                 body: fd
             }) 

@@ -16,6 +16,7 @@ exports.modelRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const model_schema_1 = require("../schema/model.schema");
 const project_schema_1 = require("../schema/project.schema");
+const syndata_schema_1 = require("../schema/syndata.schema");
 const mongoose_1 = require("mongoose");
 const papaparse_1 = __importDefault(require("papaparse"));
 exports.modelRouter = express_1.default.Router();
@@ -63,7 +64,9 @@ exports.modelRouter.put("/changeName/:id/:name", (req, res) => __awaiter(void 0,
 }));
 exports.modelRouter.delete("/:id/:projectid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield model_schema_1.ModelColl.deleteOne({ _id: new mongoose_1.Types.ObjectId(req.params.id) });
+        const modelID = new mongoose_1.Types.ObjectId(req.params.id);
+        yield syndata_schema_1.SynDataColl.deleteMany({ model_id: modelID });
+        yield model_schema_1.ModelColl.deleteOne({ _id: modelID });
         yield project_schema_1.ProjectColl.updateOne({ project_id: req.params.projectid }, { $pull: { models: req.params.id } });
         res.status(200).send("Model deleted");
     }
@@ -71,10 +74,11 @@ exports.modelRouter.delete("/:id/:projectid", (req, res) => __awaiter(void 0, vo
         res.status(500).send("Could not delete model");
     }
 }));
-exports.modelRouter.delete("/deleteData/:id/:name", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("deletedata route");
+exports.modelRouter.delete("/deleteData/:id/:dataid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield model_schema_1.ModelColl.updateOne({ _id: new mongoose_1.Types.ObjectId(req.params.id) }, { $pull: { syntheticData: { name: req.params.name } } }, { multi: true });
+        const dataID = new mongoose_1.Types.ObjectId(req.params.dataid);
+        yield syndata_schema_1.SynDataColl.deleteOne({ _id: dataID });
+        yield model_schema_1.ModelColl.updateOne({ _id: new mongoose_1.Types.ObjectId(req.params.id) }, { $pull: { syntheticData: dataID } }, { multi: true });
         res.status(200).send("Model deleted");
     }
     catch (err) {
@@ -82,15 +86,21 @@ exports.modelRouter.delete("/deleteData/:id/:name", (req, res) => __awaiter(void
         res.status(500).send("Could not delete model");
     }
 }));
-exports.modelRouter.put("/createData/:name/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.modelRouter.put("/createData/:name/:id/:projectid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const results = papaparse_1.default.parse(req.body["data_file"], { header: true });
         const rows = results.data;
-        const newData = {
+        const newDataID = new mongoose_1.Types.ObjectId();
+        const modelID = new mongoose_1.Types.ObjectId(req.params.id);
+        const newData = new syndata_schema_1.SynDataColl({
+            _id: newDataID,
             name: req.params.name,
+            model_id: modelID,
+            project_id: new mongoose_1.Types.ObjectId(req.params.projectid),
             data: rows
-        };
-        yield model_schema_1.ModelColl.updateOne({ _id: new mongoose_1.Types.ObjectId(req.params.id) }, { $push: { syntheticData: newData } });
+        });
+        yield model_schema_1.ModelColl.updateOne({ _id: modelID }, { $push: { syntheticData: newDataID } });
+        yield newData.save();
         res.status(200).send("Model updated");
     }
     catch (err) {
