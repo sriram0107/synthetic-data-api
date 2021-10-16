@@ -8,9 +8,11 @@ import path from "path";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
-import bodyParser from "body-parser";
+import multer from "multer";
 require("dotenv").config();
 
+
+const upload = multer();
 // Set rate limit properties
 const MINUTES = 15;
 const limiter = rateLimit({
@@ -20,7 +22,7 @@ const limiter = rateLimit({
 
 // Connect to database
 mongoose.connect(
-    process.env.DB as string || "mongodb+srv://usr:usr100@cluster0.fajaw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    process.env.DB as string,
     //{ useNewUrlParser: true, useUnifiedTopology: true }
 );
 const database = mongoose.connection;
@@ -30,12 +32,10 @@ database.once("open", () => console.log("Connected to database"));
 // Express config
 const app = express();
 app.use(helmet());
+app.use(upload.array("avatar"));
 app.use(cors());
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.json({limit: '50mb'}));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
-// Rate limiting is disabled for testing
 app.use(limiter);
 
 // For sending view 

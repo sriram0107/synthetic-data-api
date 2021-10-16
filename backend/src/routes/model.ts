@@ -3,8 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { ModelColl } from "../schema/model.schema";
 import { ProjectColl } from "../schema/project.schema";
 import { Types } from "mongoose";
-import csvtojson from "csvtojson";
-import { cp } from 'fs';
+import Papa from "papaparse";
 
 export const modelRouter = express.Router();
 
@@ -74,11 +73,12 @@ modelRouter.delete("/deleteData/:id/:name", async (req: Request, res: Response) 
 })
 
 modelRouter.put("/createData/:name/:id", async (req: Request, res: Response) => {
-    console.log("createData route");
     try {
+        const results = Papa.parse(req.body["data_file"], { header: true });
+        const rows = results.data;
         const newData = {
             name: req.params.name,
-            data: req.body.data
+            data: rows
         }
         await ModelColl.updateOne({ _id: new Types.ObjectId(req.params.id) }, { $push: { syntheticData: newData }});
         res.status(200).send("Model updated");

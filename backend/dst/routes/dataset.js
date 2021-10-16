@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.datasetRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const realdata_schema_1 = require("../schema/realdata.schema");
-const user_schema_1 = require("../schema/user.schema");
 const mongoose_1 = require("mongoose");
+const papaparse_1 = __importDefault(require("papaparse"));
 exports.datasetRouter = express_1.default.Router();
 exports.datasetRouter.get("/:projectid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -50,16 +50,16 @@ exports.datasetRouter.put("/updateName/:name/:id", (req, res) => __awaiter(void 
 }));
 exports.datasetRouter.post("/createData/:name/:userid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const results = papaparse_1.default.parse(req.body["data_file"], { header: true });
+        const rows = results.data;
         const newID = new mongoose_1.Types.ObjectId();
         const newData = new realdata_schema_1.realData({
             _id: newID,
             user_id: req.params.userid,
             name: req.params.name,
-            data: req.body.data,
+            data: rows,
         });
         yield newData.save();
-        // have to update user's coll here 
-        yield user_schema_1.UserColl.updateOne({ _id: new mongoose_1.Types.ObjectId(req.params.userid) }, { $push: { projects: newID } });
         res.status(200).send("Model updated");
     }
     catch (err) {

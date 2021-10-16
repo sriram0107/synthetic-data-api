@@ -20,16 +20,11 @@ const DatasetComponent: React.FC<DatasetComponentProps> = ({ datasets, refresh, 
             const result = await reader.read();
             const decoder = new TextDecoder('utf-8');
             const csv = decoder.decode(result.value);
-            const results = Papa.parse(csv, { header: true });
-            const rows = results.data;
+            const fd = new FormData();
+            fd.append("data_file", csv);
             const msg = await fetch(process.env.REACT_APP_BACKEND_DATASET + `createData/${newName}/${userid}`, {
                 method: "POST",
-                headers: {
-             'Content-Type': 'application/json'
-            },
-                body: JSON.stringify({
-                    data: rows,
-                })
+                body: fd
             }) 
         } catch (err) {
             console.error(err);
@@ -42,9 +37,11 @@ const DatasetComponent: React.FC<DatasetComponentProps> = ({ datasets, refresh, 
         fetch(`${process.env.REACT_APP_BACKEND_DATASET}updateName/${newName}/${id}`, {
             method: "PUT",
         })
-            .then(resp => console.log(resp))
+            .then(resp => {
+                console.log(resp);
+                changeRefresh(!refresh);
+            })
             .catch(err => console.error(err, " error while updating dataset"))
-        changeRefresh(!refresh);
     }
 
     const deleteDataset = (id: String) => {

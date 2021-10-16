@@ -17,6 +17,7 @@ const express_1 = __importDefault(require("express"));
 const model_schema_1 = require("../schema/model.schema");
 const project_schema_1 = require("../schema/project.schema");
 const mongoose_1 = require("mongoose");
+const papaparse_1 = __importDefault(require("papaparse"));
 exports.modelRouter = express_1.default.Router();
 exports.modelRouter.get("/:projectid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -83,11 +84,12 @@ exports.modelRouter.delete("/deleteData/:id/:name", (req, res) => __awaiter(void
     }
 }));
 exports.modelRouter.put("/createData/:name/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("createData route");
     try {
+        const results = papaparse_1.default.parse(req.body["data_file"], { header: true });
+        const rows = results.data;
         const newData = {
             name: req.params.name,
-            data: req.body.data
+            data: rows
         };
         yield model_schema_1.ModelColl.updateOne({ _id: new mongoose_1.Types.ObjectId(req.params.id) }, { $push: { syntheticData: newData } });
         res.status(200).send("Model updated");

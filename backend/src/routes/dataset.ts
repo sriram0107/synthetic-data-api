@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { realData } from "../schema/realdata.schema";
 import { UserColl as User } from "../schema/user.schema";
 import { Types } from "mongoose";
-import csvtojson from "csvtojson";
+import Papa from "papaparse";
 
 export const datasetRouter = express.Router();
 
@@ -39,16 +39,16 @@ datasetRouter.put("/updateName/:name/:id", async (req: Request, res: Response) =
 
 datasetRouter.post("/createData/:name/:userid", async (req: Request, res: Response) => {
     try {
+        const results = Papa.parse(req.body["data_file"], { header: true });
+        const rows = results.data;
         const newID = new Types.ObjectId();
         const newData = new realData({
             _id: newID,
             user_id: req.params.userid,
             name: req.params.name,
-            data: req.body.data,
+            data: rows,
         })
         await newData.save();
-        // have to update user's coll here 
-        await User.updateOne({ _id: new Types.ObjectId(req.params.userid) }, { $push: { projects: newID } });
         res.status(200).send("Model updated");
     } catch (err) {
         console.log(err)

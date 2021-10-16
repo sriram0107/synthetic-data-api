@@ -17,7 +17,7 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
     const createNewModel = () => {
         const modelName = prompt("Enter name of model");
         const batchSize = prompt("Enter batch size of model", "32");
-        const trainingCycles = prompt("Enter training cycled of model", "32");
+        const trainingCycles = prompt("Enter training cycles of model", "32");
         fetch(`${process.env.REACT_APP_BACKEND_MODEL}custom/${projectid}`, {
             method: "POST",
             headers: {
@@ -29,9 +29,11 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
                 name: modelName,
             })
         })
-            .then(resp => console.log("Added model"))
+            .then(resp => {
+                console.log("Added model");
+                changeRefresh(!refresh);
+            })
             .catch(err => console.error(err, " error while creating model"))
-        changeRefresh(!refresh);
     }
 
     const deleteModel = (id: String) => {
@@ -63,16 +65,14 @@ const ModelComponent: React.FC<ModelComponentProps> = ({ models, projectid, refr
         const result = await reader.read();
         const decoder = new TextDecoder('utf-8');
         const csv = decoder.decode(result.value);
-        const results = Papa.parse(csv, { header: true });
-        const rows = results.data;
+        const fd = new FormData();
+        fd.append("data_file", csv);
         const msg = await fetch(process.env.REACT_APP_BACKEND_MODEL + `createData/${newName}/${id}`, {
             method: "PUT",
             headers: {
              'Content-Type': 'application/json'
             },
-                body: JSON.stringify({
-                    data: rows,
-                })
+                body: fd
         }) 
         changeRefresh(!refresh);
     }
