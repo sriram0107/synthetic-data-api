@@ -7,13 +7,14 @@ exports.realDataColl = new mongoose_1.Schema({
         type: mongoose_1.Types.ObjectId,
         required: true,
     },
-    user_id: {
+    project_id: {
         type: mongoose_1.Types.ObjectId,
         required: true,
     },
     name: {
         type: String,
         required: true,
+        unique: true,
     },
     data: [Object]
 }, {

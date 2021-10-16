@@ -21,10 +21,7 @@ export const Model = new Schema({
             }
         },
         syntheticData: [{
-            name: {
-                type: String,
-            },
-            data: [Object]
+            type: Types.ObjectId
         }]
 },
     {

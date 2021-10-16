@@ -48,14 +48,14 @@ exports.datasetRouter.put("/updateName/:name/:id", (req, res) => __awaiter(void 
         res.status(500).send("Could not update model");
     }
 }));
-exports.datasetRouter.post("/createData/:name/:userid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.datasetRouter.post("/createData/:name/:projectid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const results = papaparse_1.default.parse(req.body["data_file"], { header: true });
         const rows = results.data;
         const newID = new mongoose_1.Types.ObjectId();
         const newData = new realdata_schema_1.realData({
             _id: newID,
-            user_id: req.params.userid,
+            project_id: req.params.projectid,
             name: req.params.name,
             data: rows,
         });

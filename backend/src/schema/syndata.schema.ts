@@ -1,8 +1,11 @@
 import { model, Types, Schema } from "mongoose";
 
-
-export const realDataColl = new Schema({
+export const SynData = new Schema({
     _id: {
+        type: Types.ObjectId,
+        required: true,
+    },
+    model_id: {
         type: Types.ObjectId,
         required: true,
     },
@@ -12,10 +15,9 @@ export const realDataColl = new Schema({
     },
     name: {
         type: String,
-        required: true,
         unique: true,
     },
-    data: [Object]
+    data: [Object],
 },
     {
         writeConcern: {
@@ -25,4 +27,4 @@ export const realDataColl = new Schema({
         }
     })
 
-export const realData = model("realdata",  realDataColl);
+export const SynDataColl = model("syntheticdata",  SynData);

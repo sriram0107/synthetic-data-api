@@ -8,6 +8,7 @@ const dataset_1 = require("./routes/dataset");
 const model_1 = require("./routes/model");
 const user_1 = require("./routes/user");
 const project_1 = require("./routes/project");
+const syndata_1 = require("./routes/syndata");
 const mongoose_1 = __importDefault(require("mongoose"));
 const path_1 = __importDefault(require("path"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -45,6 +46,7 @@ app.use("/dataset", dataset_1.datasetRouter);
 app.use("/model", model_1.modelRouter);
 app.use("/user", user_1.userRouter);
 app.use("/project", project_1.projectRouter);
+app.use("/syndata", syndata_1.synDataRouter);
 // Start Express server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

@@ -1,9 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModelColl = exports.Model = void 0;
+exports.SynDataColl = exports.SynData = void 0;
 const mongoose_1 = require("mongoose");
-exports.Model = new mongoose_1.Schema({
+exports.SynData = new mongoose_1.Schema({
     _id: {
+        type: mongoose_1.Types.ObjectId,
+        required: true,
+    },
+    model_id: {
         type: mongoose_1.Types.ObjectId,
         required: true,
     },
@@ -13,18 +17,9 @@ exports.Model = new mongoose_1.Schema({
     },
     name: {
         type: String,
+        unique: true,
     },
-    parameters: {
-        batchSize: {
-            type: Number
-        },
-        trainingCycles: {
-            type: Number
-        }
-    },
-    syntheticData: [{
-            type: mongoose_1.Types.ObjectId
-        }]
+    data: [Object],
 }, {
     writeConcern: {
         w: "majority",
@@ -32,4 +27,4 @@ exports.Model = new mongoose_1.Schema({
         wtimeout: 1000,
     }
 });
-exports.ModelColl = (0, mongoose_1.model)("model", exports.Model);
+exports.SynDataColl = (0, mongoose_1.model)("syntheticdata", exports.SynData);
